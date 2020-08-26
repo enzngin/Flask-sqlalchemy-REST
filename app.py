@@ -1,4 +1,4 @@
-from flask import Flask, jsonify,request
+from flask import Flask, jsonify,request,json
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 
@@ -19,21 +19,19 @@ def index():
 @app.route('/user', methods=['POST'])
 def add_user():
   username = request.json['username']
-  new_user = User(username)
-  db.session.add(new_user)
+  user = User(username)
+  db.session.add(user)
   db.session.commit()
-
+  
   users = User.query.all()
-  result = user_schema.dump(users)
-  return jsonify(result)
+  return user_schema.jsonify(users)
 
-
+  
 #Get all Users
 @app.route('/user')
 def get_users():
     users = User.query.all()
-    result = user_schema.dump(users)
-    return jsonify(result)
+    return user_schema.jsonify(users)
 
 
 #Get single User
@@ -52,19 +50,18 @@ def update_user(id):
     db.session.commit()
 
     users = User.query.all()
-    result = user_schema.dump(users)
-    return jsonify(result)
+    return user_schema.jsonify(users)
 
 
 #Delete user
-@app.route('/users/<id>', methods=['DELETE'])
+@app.route('/user/<id>', methods=['DELETE'])
 def delete_user(id):
     user = User.query.filter_by(id=id).first()
     db.session.delete(user)
     db.session.commit()
+
     users = User.query.all()
-    result = user_schema.dump(users)
-    return jsonify(result)
+    return user_schema.jsonify(users)
 
 
 #Filter by name
